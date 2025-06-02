@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Product } from "@/generated/prisma";
+import Image from "next/image";
 
 interface ProductFormProps {
   product?: Product;
@@ -23,6 +24,7 @@ export function ProductForm({ product, userId }: ProductFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: product?.name || "",
@@ -88,15 +90,29 @@ export function ProductForm({ product, userId }: ProductFormProps) {
   };
 
   const handleDeleteImage = async (image: string) => {
-    const response = await fetch(`/api/upload?url=${image}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      const message = errorData?.message || "Delete failed";
-      throw new Error(message);
+    setIsUploading(true);
+    try {
+      const response = await fetch(`/api/upload?url=${image}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const message = errorData?.message || "Delete failed";
+        throw new Error(message);
+      }
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+      setFormData((prev) => ({ ...prev, image: "" }));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to delete image`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
-    setFormData((prev) => ({ ...prev, image: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -198,6 +214,7 @@ export function ProductForm({ product, userId }: ProductFormProps) {
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
+                ref={inputRef}
                 disabled={isUploading}
               />
               {isUploading && (
@@ -208,18 +225,21 @@ export function ProductForm({ product, userId }: ProductFormProps) {
               )}
               {formData.image && (
                 <div className="mt-2 flex items-center space-x-4">
-                  <img
-                    src={formData.image}
+                  <Image
+                    src={formData.image || ""}
                     alt="Preview"
                     className="w-20 h-20 object-cover rounded"
+                    width={80}
+                    height={80}
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => handleDeleteImage(formData.image)}
                     className="text-red-600 hover:text-red-800 font-semibold"
+                    variant="outline"
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

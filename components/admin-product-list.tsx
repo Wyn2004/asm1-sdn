@@ -27,7 +27,7 @@ interface AdminProductListProps {
 export function AdminProductList({ products }: AdminProductListProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<String | null>(null);
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
