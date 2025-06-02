@@ -7,7 +7,6 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
-import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +16,6 @@ export const metadata: Metadata = {
     "Discover the latest fashion trends and premium clothing collections",
   icons: {
     icon: "/favicon.ico",
-    // bạn có thể thêm các định dạng khác ở đây
     apple: "/apple-touch-icon.png",
   },
 };

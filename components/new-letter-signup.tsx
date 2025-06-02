@@ -28,7 +28,7 @@ export function NewsletterSignup() {
   };
 
   return (
-    <div className="bg-gray-100 py-12">
+    <div className="bg-secondary py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">
