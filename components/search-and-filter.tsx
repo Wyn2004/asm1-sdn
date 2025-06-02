@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Filter, X, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function SearchAndFilter() {
   const router = useRouter();
@@ -16,6 +23,9 @@ export function SearchAndFilter() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+  const [sortOrder, setSortOrder] = useState(
+    searchParams.get("order") || "default"
+  );
 
   const handleSearch = () => {
     startTransition(() => {
@@ -23,10 +33,10 @@ export function SearchAndFilter() {
       if (search) params.set("search", search);
       if (minPrice) params.set("minPrice", minPrice);
       if (maxPrice) params.set("maxPrice", maxPrice);
-      // Reset to page 1 when filtering
+      if (sortOrder && sortOrder !== "default") params.set("order", sortOrder);
       params.set("page", "1");
 
-      router.push(`${pathname}?${params.toString()}`);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     });
   };
 
@@ -35,16 +45,18 @@ export function SearchAndFilter() {
       setSearch("");
       setMinPrice("");
       setMaxPrice("");
-      router.push(pathname);
+      setSortOrder("default");
+      router.replace(pathname, { scroll: false });
     });
   };
 
-  const hasActiveFilters = search || minPrice || maxPrice;
+  const hasActiveFilters =
+    search || minPrice || maxPrice || sortOrder !== "default";
 
   return (
     <Card className="mb-8">
       <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -72,6 +84,22 @@ export function SearchAndFilter() {
             onChange={(e) => setMaxPrice(e.target.value)}
             disabled={isPending}
           />
+
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => {
+              setSortOrder(value);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by price" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Default</SelectItem>
+              <SelectItem value="asc">Price: Low to High</SelectItem>
+              <SelectItem value="desc">Price: High to Low</SelectItem>
+            </SelectContent>
+          </Select>
 
           <div className="flex gap-2">
             <Button

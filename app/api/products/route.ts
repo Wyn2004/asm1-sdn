@@ -4,8 +4,21 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = new URL(request.url).searchParams as ProductFilters;
-    const result = await getAllProducts(searchParams);
+    const url = new URL(request.url);
+    const filters: ProductFilters = {
+      search: url.searchParams.get("search") || undefined,
+      minPrice: url.searchParams.get("minPrice")
+        ? Number(url.searchParams.get("minPrice"))
+        : undefined,
+      maxPrice: url.searchParams.get("maxPrice")
+        ? Number(url.searchParams.get("maxPrice"))
+        : undefined,
+      page: url.searchParams.get("page")
+        ? Number(url.searchParams.get("page"))
+        : undefined,
+      order: url.searchParams.get("order") as "asc" | "desc" | undefined,
+    };
+    const result = await getAllProducts(filters);
 
     return NextResponse.json(result);
   } catch (error) {

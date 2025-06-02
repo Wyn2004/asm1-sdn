@@ -7,6 +7,8 @@ export async function getAllProducts(
 ): Promise<ProductsResponse> {
   const pageSize = filters.limit || 6;
   const skip = (filters.page! - 1) * pageSize || 0;
+  console.log("Order filter:", filters.order);
+
   const products = await prisma.product.findMany({
     skip,
     take: pageSize,
@@ -25,7 +27,7 @@ export async function getAllProducts(
         : {}),
     },
     orderBy: {
-      price: filters.order === "asc" ? "asc" : "desc",
+      price: filters?.order === "desc" ? "desc" : "asc",
     },
   });
 
