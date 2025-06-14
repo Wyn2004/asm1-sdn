@@ -17,9 +17,16 @@ import Image from "next/image";
 interface ProductFormProps {
   product?: Product;
   userId?: string;
+  setRecall?: (recall: boolean) => void;
+  recall?: boolean;
 }
 
-export function ProductForm({ product, userId }: ProductFormProps) {
+export function ProductForm({
+  product,
+  userId,
+  setRecall,
+  recall,
+}: ProductFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -141,6 +148,10 @@ export function ProductForm({ product, userId }: ProductFormProps) {
         description: `Product ${product ? "updated" : "created"} successfully`,
       });
 
+      if (setRecall) {
+        setRecall(!recall);
+      }
+
       if (!product) {
         setFormData({
           name: "",
@@ -149,8 +160,6 @@ export function ProductForm({ product, userId }: ProductFormProps) {
           image: "",
         });
       }
-
-      router.refresh();
     } catch (error) {
       toast({
         title: "Error",
