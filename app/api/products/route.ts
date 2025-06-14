@@ -1,5 +1,7 @@
 import { createProduct, getAllProducts } from "@/app/actions/product.action";
 import { ProductFilters } from "@/types/product.type";
+import { getServerSession } from "next-auth";
+import { authOption } from "@/app/api/auth/[...nextauth]/route";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -32,6 +34,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOption);
+    const userId = session?.user.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const product = await createProduct(body);
     return NextResponse.json(product, { status: 201 });
