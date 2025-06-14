@@ -12,6 +12,7 @@ export default function AdminPage() {
   const userId = session?.user.id;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recall, setRecall] = useState<boolean>(false);
 
   useEffect(() => {
     if (userId) {
@@ -20,7 +21,7 @@ export default function AdminPage() {
         .then((data) => setProducts(data))
         .finally(() => setLoading(false));
     }
-  }, [userId]);
+  }, [userId, recall]);
 
   if (status === "loading" || loading) {
     return <div className="p-4">Loading...</div>;
@@ -37,11 +38,15 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
           <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
-          <ProductForm userId={userId} />
+          <ProductForm userId={userId} setRecall={setRecall} recall={recall} />
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">Manage Products</h2>
-          <AdminProductList products={products} />
+          <AdminProductList
+            products={products}
+            setRecall={setRecall}
+            recall={recall}
+          />
         </div>
       </div>
     </div>

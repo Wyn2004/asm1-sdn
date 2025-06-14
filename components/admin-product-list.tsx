@@ -22,9 +22,15 @@ import { Product } from "@/generated/prisma";
 
 interface AdminProductListProps {
   products: Product[];
+  setRecall: (recall: boolean) => void;
+  recall: boolean;
 }
 
-export function AdminProductList({ products }: AdminProductListProps) {
+export function AdminProductList({
+  products,
+  setRecall,
+  recall,
+}: AdminProductListProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<String | null>(null);
@@ -43,7 +49,9 @@ export function AdminProductList({ products }: AdminProductListProps) {
         description: "Product deleted successfully",
       });
 
-      router.refresh();
+      if (setRecall) {
+        setRecall(!recall);
+      }
     } catch (error) {
       toast({
         title: "Error",
