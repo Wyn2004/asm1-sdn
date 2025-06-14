@@ -3,24 +3,30 @@ import {
   getProductById,
   updateProduct,
 } from "@/app/actions/product.action";
+import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import { type NextRequest, NextResponse } from "next/server";
+import { authOption } from "../../auth/[...nextauth]/route";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
-    const params = await context.params;
-    const product = await getProductById(params.id);
+    const { id } = context.params;
+
+    const product = await getProductById(id);
+
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+
     return NextResponse.json(product);
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json(
-      { error: "Failed to fetch product" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
@@ -31,6 +37,12 @@ export async function PUT(
   context: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOption);
+
+    const userId = session?.user.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const params = await context.params;
     const product = await updateProduct(params.id, body);
@@ -52,6 +64,11 @@ export async function DELETE(
   context: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOption);
+    const userId = session?.user.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const params = await context.params;
     const success = await deleteProduct(params.id);
     if (!success) {

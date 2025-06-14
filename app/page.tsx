@@ -67,9 +67,6 @@ async function ProductSection({
 async function FeaturedSection() {
   async function getFeaturedProducts(limit: number): Promise<ProductsResponse> {
     const featuredProducts = await fetch(`${apiUrl}/products?limit=${limit}`);
-    if (!featuredProducts.ok) {
-      throw new Error("Failed to fetch featured products");
-    }
     return featuredProducts.json();
   }
   const { data } = await getFeaturedProducts(6);
