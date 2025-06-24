@@ -1,3 +1,4 @@
+"use client";
 import { Suspense } from "react";
 import { ProductGrid } from "@/components/product-grid";
 import { SearchAndFilter } from "@/components/search-and-filter";
@@ -14,7 +15,7 @@ import { DiscountBanner } from "@/components/discount-banner";
 import { NewsletterSignup } from "@/components/new-letter-signup";
 import { Footer } from "@/components/footer";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 async function getProducts(
   searchParamsPromise: Promise<ProductFilters> | ProductFilters

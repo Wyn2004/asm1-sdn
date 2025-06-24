@@ -1,15 +1,24 @@
 "use client";
 import Link from "next/link";
-import { ShoppingBag, Settings, LogIn, LogOut } from "lucide-react";
+import {
+  ShoppingBag,
+  Settings,
+  LogIn,
+  LogOut,
+  ShoppingCart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut, useSession } from "next-auth/react";
+import { useCart } from "@/providers/cart.provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
+  const { totalItems } = useCart();
   const user = session?.user;
 
   console.log(session);
@@ -32,8 +41,28 @@ export function Navbar() {
               <Button variant="ghost">Home</Button>
             </Link>
 
+            {user && (
+              <Link href="/cart">
+                <Button variant="ghost" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {totalItems > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {totalItems}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
+
             {user ? (
               <>
+                <Link href="/orders">
+                  <Button variant="ghost">Orders</Button>
+                </Link>
+
                 <Link href="/admin">
                   <Button variant="ghost">
                     <Settings className="h-4 w-4 mr-2" />

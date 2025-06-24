@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { type NextRequest, NextResponse } from "next/server";
 import { authOption } from "../../auth/[...nextauth]/route";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 export async function GET(
   req: NextRequest,
   context: { params: { id: string } }

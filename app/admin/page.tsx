@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ProductForm } from "@/components/product-form";
 import { AdminProductList } from "@/components/admin-product-list";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
