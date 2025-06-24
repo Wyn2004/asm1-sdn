@@ -1,4 +1,3 @@
-"use client";
 import { Suspense } from "react";
 import { ProductGrid } from "@/components/product-grid";
 import { SearchAndFilter } from "@/components/search-and-filter";
@@ -14,26 +13,17 @@ import { ProductFilters, ProductsResponse } from "@/types/product.type";
 import { DiscountBanner } from "@/components/discount-banner";
 import { NewsletterSignup } from "@/components/new-letter-signup";
 import { Footer } from "@/components/footer";
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+import { getAllProducts } from "@/app/actions/product.action";
 
 async function getProducts(
   searchParamsPromise: Promise<ProductFilters> | ProductFilters
 ): Promise<ProductsResponse> {
   const searchParams = await searchParamsPromise;
-  const queryParams = new URLSearchParams();
 
-  if (searchParams.search) queryParams.set("search", searchParams.search);
-  if (searchParams.minPrice)
-    queryParams.set("minPrice", searchParams.minPrice.toString());
-  if (searchParams.maxPrice)
-    queryParams.set("maxPrice", searchParams.maxPrice.toString());
-  if (searchParams.page) queryParams.set("page", searchParams.page.toString());
-  if (searchParams.order)
-    queryParams.set("order", searchParams.order.toString());
-
-  const products = await fetch(`${apiUrl}/products?${queryParams}`);
-  if (!products.ok) {
+  try {
+    return await getAllProducts(searchParams);
+  } catch (error) {
+    console.error("Error fetching products:", error);
     return {
       data: [],
       total: 0,
@@ -42,7 +32,6 @@ async function getProducts(
       totalProducts: 0,
     };
   }
-  return products.json();
 }
 
 async function ProductSection({
@@ -67,8 +56,18 @@ async function ProductSection({
 
 async function FeaturedSection() {
   async function getFeaturedProducts(limit: number): Promise<ProductsResponse> {
-    const featuredProducts = await fetch(`${apiUrl}/products?limit=${limit}`);
-    return featuredProducts.json();
+    try {
+      return await getAllProducts({ limit });
+    } catch (error) {
+      console.error("Error fetching featured products:", error);
+      return {
+        data: [],
+        total: 0,
+        totalPages: 0,
+        page: 1,
+        totalProducts: 0,
+      };
+    }
   }
   const { data } = await getFeaturedProducts(6);
   return <FeaturedCarousel products={data} />;
